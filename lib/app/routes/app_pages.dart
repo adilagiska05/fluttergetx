@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import 'package:mobile_project/app/modules/dasboard/bindings/dasboard_binding.dart';
+import 'package:mobile_project/app/modules/dasboard/views/dasboard_view.dart';
 import 'package:mobile_project/app/modules/home/bindings/home_binding.dart';
 import 'package:mobile_project/app/modules/home/views/home_view.dart';
 import 'package:mobile_project/app/modules/login/bindings/login_binding.dart';
@@ -22,6 +24,11 @@ class AppPages {
       name: _Paths.LOGIN,
       page: () => LoginView(),
       binding: LoginBinding(),
+    ),
+    GetPage(
+      name: _Paths.DASBOARD,
+      page: () => DasboardView(),
+      binding: DasboardBinding(),
     ),
   ];
 }
