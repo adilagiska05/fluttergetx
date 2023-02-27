@@ -37,6 +37,7 @@ class LoginController extends GetxController {
 
     if (Response.body['success'] == true) {
       authToken.write('token', Response.body['access_token']);
+      authToken.write('full_name', Response.body['full_name']);
       Get.offAll(() => DasboardView());
     } else {
       Get.snackbar(

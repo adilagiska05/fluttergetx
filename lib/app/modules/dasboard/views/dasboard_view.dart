@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mobile_project/app/data/entertainment_response.dart';
+import 'package:mobile_project/app/data/headline_response.dart';
+import 'package:mobile_project/app/data/sports_response.dart';
+import 'package:mobile_project/app/data/technology_response.dart';
+import 'package:mobile_project/app/modules/home/views/home_view.dart';
 
 import '../controllers/dasboard_controller.dart';
 
 class DasboardView extends GetView<DasboardController> {
   @override
   Widget build(BuildContext context) {
+    DasboardController controller = Get.put(DasboardController());
+    final ScrollController scrollController = ScrollController();
+    final auth = GetStorage();
+
     return SafeArea(
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(120.0),
@@ -21,8 +31,8 @@ class DasboardView extends GetView<DasboardController> {
                     "Hallo!",
                     textAlign: TextAlign.end,
                   ),
-                  subtitle: const Text(
-                    "Adila",
+                  subtitle: Text(
+                    auth.read('full_name').toString(),
                     textAlign: TextAlign.end,
                   ),
                   trailing: Container(
@@ -45,7 +55,8 @@ class DasboardView extends GetView<DasboardController> {
                     tabs: [
                       Tab(text: "Headline"),
                       Tab(text: "Teknologi"),
-                      Tab(text: "Sains"),
+                      Tab(text: "Olahraga"),
+                      Tab(text: "Hiburan"),
                     ],
                   ),
                 ),
@@ -54,157 +65,334 @@ class DasboardView extends GetView<DasboardController> {
           ),
           body: TabBarView(
             children: [
-              headline(),
-              teknologi(),
-              sains(),
+              headline(controller, scrollController),
+              technology(controller, scrollController),
+              sports(controller, scrollController),
+              entertainment(controller, scrollController),
             ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              await auth.erase();
+              Get.offAll(() => HomeView());
+            },
+            backgroundColor: Colors.redAccent,
+            child: const Icon(Icons.logout_rounded),
           ),
         ),
       ),
     );
   }
 
-  ListView sains() {
-   return ListView(
-      shrinkWrap: true,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 5, left: 8, right: 8, bottom: 5),
-          height: 110,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadiusDirectional.circular(8.0),
-                 child: Image.network(
-                  'https://picsum.photos/100',
-                ),
+  FutureBuilder<HeadlineResponse> headline(
+      DasboardController controller, ScrollController scrollController) {
+    return FutureBuilder<HeadlineResponse>(
+      future: controller.getHeadline(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Lottie.network(
+              'https://gist.githubusercontent.com/olipiskandar/4f08ac098c81c32ebc02c55f5b11127b/raw/6e21dc500323da795e8b61b5558748b5c7885157/loading.json',
+              repeat: true,
+              width: MediaQuery.of(context).size.width / 1,
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text("Tidak ada data"));
+        }
+        return ListView.builder(
+          itemCount: snapshot.data!.data!.length,
+          controller: scrollController,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.only(
+                top: 5,
+                left: 8,
+                right: 8,
+                bottom: 5,
               ),
-
-              const SizedBox(
-                width: 10,
-              ),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Sri Mulyani Kecam Hidup Mewah Pejabat Pajak Buntut Kasus Rubicon - CNN Indonesia'),
-                    const SizedBox(
-                      height: 2,
+              height: 110,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      snapshot.data!.data![index].urlToImage.toString(),
+                      height: 130,
+                      width: 130,
+                      fit: BoxFit.cover,
                     ),
-
-                    Column(
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Author : Muhammad Azwar'), 
-                        Text('Sumber : detik.com'), 
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          snapshot.data!.data![index].title.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                'Author : ${snapshot.data!.data![index].author}'),
+                            Text('Sumber :${snapshot.data!.data![index].name}'),
+                          ],
+                        ),
                       ],
-                    )
-                  ],
-                ),
-                ),
-            ],
-          ),
-        ),
-      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  ListView teknologi() {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 5, left: 8, right: 8, bottom: 5),
-          height: 110,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadiusDirectional.circular(8.0),
-                 child: Image.network(
-                  'https://picsum.photos/100',
-                ),
+  FutureBuilder<TechnologyResponse> technology(
+      DasboardController controller, ScrollController scrollController) {
+    return FutureBuilder<TechnologyResponse>(
+      future: controller.getTechnology(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Lottie.network(
+              'https://gist.githubusercontent.com/olipiskandar/4f08ac098c81c32ebc02c55f5b11127b/raw/6e21dc500323da795e8b61b5558748b5c7885157/loading.json',
+              repeat: true,
+              width: MediaQuery.of(context).size.width / 1,
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text("Tidak ada data"));
+        }
+        return ListView.builder(
+          itemCount: snapshot.data!.data!.length,
+          controller: scrollController,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.only(
+                top: 5,
+                left: 8,
+                right: 8,
+                bottom: 5,
               ),
-
-              const SizedBox(
-                width: 10,
-              ),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Sri Mulyani Kecam Hidup Mewah Pejabat Pajak Buntut Kasus Rubicon - CNN Indonesia'),
-                    const SizedBox(
-                      height: 2,
+              height: 110,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      snapshot.data!.data![index].urlToImage.toString(),
+                      height: 130,
+                      width: 130,
+                      fit: BoxFit.cover,
                     ),
-
-                    Column(
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Author : Muhammad Azwar'), 
-                        Text('Sumber : detik.com'), 
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          snapshot.data!.data![index].title.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                'Author : ${snapshot.data!.data![index].author}'),
+                            Text('Sumber :${snapshot.data!.data![index].name}'),
+                          ],
+                        ),
                       ],
-                    )
-                  ],
-                ),
-                ),
-            ],
-          ),
-        ),
-      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
-  ListView headline() {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 5, left: 8, right: 8, bottom: 5),
-          height: 110,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadiusDirectional.circular(8.0),
-                 child: Image.network(
-                  'https://picsum.photos/100',
-                ),
+  FutureBuilder<SportsResponse> sports(
+      DasboardController controller, ScrollController scrollController) {
+    return FutureBuilder<SportsResponse>(
+      future: controller.getSports(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Lottie.network(
+              'https://gist.githubusercontent.com/olipiskandar/4f08ac098c81c32ebc02c55f5b11127b/raw/6e21dc500323da795e8b61b5558748b5c7885157/loading.json',
+              repeat: true,
+              width: MediaQuery.of(context).size.width / 1,
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text("Tidak ada data"));
+        }
+        return ListView.builder(
+          itemCount: snapshot.data!.data!.length,
+          controller: scrollController,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.only(
+                top: 5,
+                left: 8,
+                right: 8,
+                bottom: 5,
               ),
-
-              const SizedBox(
-                width: 10,
-              ),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Sri Mulyani Kecam Hidup Mewah Pejabat Pajak Buntut Kasus Rubicon - CNN Indonesia'),
-                    const SizedBox(
-                      height: 2,
+              height: 110,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      snapshot.data!.data![index].urlToImage.toString(),
+                      height: 130,
+                      width: 130,
+                      fit: BoxFit.cover,
                     ),
-
-                    Column(
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Author : Muhammad Azwar'), 
-                        Text('Sumber : detik.com'), 
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          snapshot.data!.data![index].title.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                'Author : ${snapshot.data!.data![index].author}'),
+                            Text('Sumber :${snapshot.data!.data![index].name}'),
+                          ],
+                        ),
                       ],
-                    )
-                  ],
-                ),
-                ),
-            ],
-          ),
-        ),
-      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  FutureBuilder<EntertainmentResponse> entertainment(
+      DasboardController controller, ScrollController scrollController) {
+    return FutureBuilder<EntertainmentResponse>(
+      future: controller.getEntertainment(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: Lottie.network(
+              'https://gist.githubusercontent.com/olipiskandar/4f08ac098c81c32ebc02c55f5b11127b/raw/6e21dc500323da795e8b61b5558748b5c7885157/loading.json',
+              repeat: true,
+              width: MediaQuery.of(context).size.width / 1,
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text("Tidak ada data"));
+        }
+        return ListView.builder(
+          itemCount: snapshot.data!.data!.length,
+          controller: scrollController,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.only(
+                top: 5,
+                left: 8,
+                right: 8,
+                bottom: 5,
+              ),
+              height: 110,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      snapshot.data!.data![index].urlToImage.toString(),
+                      height: 130,
+                      width: 130,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          snapshot.data!.data![index].title.toString(),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                'Author : ${snapshot.data!.data![index].author}'),
+                            Text('Sumber :${snapshot.data!.data![index].name}'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
