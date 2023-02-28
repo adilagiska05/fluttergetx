@@ -57,6 +57,7 @@ class DasboardView extends GetView<DasboardController> {
                       Tab(text: "Teknologi"),
                       Tab(text: "Olahraga"),
                       Tab(text: "Hiburan"),
+                      Tab(text: "Profile"),
                     ],
                   ),
                 ),
@@ -69,6 +70,7 @@ class DasboardView extends GetView<DasboardController> {
               technology(controller, scrollController),
               sports(controller, scrollController),
               entertainment(controller, scrollController),
+              profile(),
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -79,6 +81,34 @@ class DasboardView extends GetView<DasboardController> {
             backgroundColor: Colors.redAccent,
             child: const Icon(Icons.logout_rounded),
           ),
+        ),
+      ),
+    );
+  }
+
+  Center profile() {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 15.0),
+        child: Column(
+          children: [
+            Container(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(
+                  'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.alodokter.com%2Finilah-cara-merawat-anak-kucing-yang-tepat&psig=AOvVaw1qMTdyy0IjUVXNTM_nDUQb&ust=1677643279721000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCNDWjbSqt_0CFQAAAAAdAAAAABAD',
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 5),
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Text('Halo Nama Saya Adila Giska T'),
+                Text('Saya suka menggambar'),
+              ]),
+            )
+          ],
         ),
       ),
     );
