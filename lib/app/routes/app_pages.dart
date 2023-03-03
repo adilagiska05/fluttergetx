@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:get/get.dart';
 
 import 'package:mobile_project/app/modules/dasboard/bindings/dasboard_binding.dart';

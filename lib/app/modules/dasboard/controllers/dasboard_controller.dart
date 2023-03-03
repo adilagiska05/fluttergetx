@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_overrides
+
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -8,6 +10,7 @@ import 'package:mobile_project/app/data/technology_response.dart';
 import 'package:mobile_project/app/utils/api.dart';
 
 class DasboardController extends GetxController {
+  // ignore: todo
   //TODO: Implement DasboardController
 
   final _getConnect = GetConnect();

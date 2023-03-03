@@ -105,7 +105,7 @@ class DasboardView extends GetView<DasboardController> {
               child:
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 Text('Halo Nama Saya Adila Giska T'),
-                Text('Saya suka menggambar'),
+                Text('Saya seorang pelajar, saya memiliki keahlian dalam pengembangan website dengan menggunakan framwork laravel, saya juga suka menggambar dan saya selalu ingin mencoba hal baru dalam hidup saya.'),
               ]),
             )
           ],

@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: non_constant_identifier_names, unused_local_variable, unnecessary_overrides
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -6,6 +7,7 @@ import 'package:mobile_project/app/modules/dasboard/views/dasboard_view.dart';
 import 'package:mobile_project/app/utils/api.dart';
 
 class LoginController extends GetxController {
+  // ignore: todo
   //TODO: Implement LoginController
   final _getConnect = GetConnect();
   TextEditingController emailController = TextEditingController();

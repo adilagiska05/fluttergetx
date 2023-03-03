@@ -6,6 +6,7 @@ import 'package:mobile_project/app/modules/dasboard/views/dasboard_view.dart';
 import 'package:mobile_project/app/modules/login/views/login_view.dart';
 
 class HomeController extends GetxController {
+  // ignore: todo
   //TODO: Implement HomeController
   late Timer _pindah;
   final authToken = GetStorage();
@@ -13,6 +14,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     _pindah = Timer.periodic(
       const Duration(seconds: 4),
       (timer) => authToken.read('token') == null
